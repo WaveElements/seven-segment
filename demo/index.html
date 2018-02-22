@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>seven-segment demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../seven-segment.html">
+    <link rel="import" href="../seven-segments.html">
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic seven-segment demo</h3>
+      <demo-snippet>
+        <template>
+          <seven-segment value="0"></seven-segment>
+          <seven-segment value="1"></seven-segment>
+          <seven-segment value="2"></seven-segment>
+          <seven-segment value="3"></seven-segment>
+          <seven-segment value="4"></seven-segment>
+          <seven-segment value="5"></seven-segment>
+          <seven-segment value="6"></seven-segment>
+          <seven-segment value="7"></seven-segment>
+          <seven-segment value="8"></seven-segment>
+          <seven-segment value="9"></seven-segment>
+        </template>
+      </demo-snippet>
+    </div>
+    <div class="vertical-section-container centered">
+      <h3>Seven-segment with decimal point</h3>
+      <demo-snippet>
+        <template>
+          <seven-segment value="2" decimal></seven-segment>
+          <seven-segment value="5"></seven-segment>
+        </template>
+      </demo-snippet>
+    </div>
+    <div class="vertical-section-container centered">
+      <h3>Custom color and size</h3>
+      <demo-snippet>
+        <template>
+          <style>
+            .green {
+              --seven-segment-color-on:  #388E3C;
+              --seven-segment-color-off: #20262e;
+              --seven-segment-background-color: #20262e;
+            }
+            .big {
+              --seven-segment-width: 5rem;
+              padding: 1rem;
+            }
+          </style>
+
+          <seven-segment class="green" value="7" decimal></seven-segment>
+          <seven-segment class="green" value="8"></seven-segment>
+          <seven-segment class="green big" value="9"></seven-segment>
+        </template>
+      </demo-snippet>
+    </div>
+    <div class="vertical-section-container centered">
+      <h3>Extra symbols</h3>
+      <demo-snippet>
+        <template>
+          <seven-segment value="_"></seven-segment>
+          <seven-segment value=" "></seven-segment> <!-- display off segments-->
+          <seven-segment value="-"></seven-segment>
+          <seven-segment value=" " decimal></seven-segment>
+          <seven-segment value="+"></seven-segment>
+          <seven-segment value="="></seven-segment>
+          <seven-segment></seven-segment> <!-- display off segments-->
+          <seven-segment value="*"></seven-segment><!-- not displayed (see console)-->
+          <seven-segment value=":"></seven-segment>
+        </template>
+      </demo-snippet>
+    </div>
+    <div class="vertical-section-container centered">
+      <h3>Seven-segment<span style="color: red;">s</span> demo</h3>
+      <demo-snippet>
+        <template>
+          <style>
+            .container {
+              text-align: center;
+            }
+            .red {
+              --seven-segment-color-on:  #FFFFFF;
+              --seven-segment-color-off: #FF0000;
+              --seven-segment-background-color: #FF0000 ;
+              padding: 3rem;
+            }
+            .wide {
+              font-size: 22px;
+              --seven-segment-width: 4em;
+              --seven-segment-color-off: #FFFFFF;
+            }
+          </style>
+
+          <div class="container">
+            <seven-segments class="red"  value="Error 404"></seven-segments><br>
+            <seven-segments class="wide" value="2+2=22"></seven-segments><br>
+            <seven-segments class="red"  value="lol.js"></seven-segments>
+          </div>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>

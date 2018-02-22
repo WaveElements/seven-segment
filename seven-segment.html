@@ -1,0 +1,144 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<!-- 
+
+Polymer 2 seven segment display element
+
+Example:
+    <seven-segment value="0" decimal></seven-segment>
+    <seven-segment value="5"></seven-segment>
+      
+### Styling
+
+The following custom properties and mixins are also available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--seven-segment-color-on`  | Segment color `on` | #FF0000
+`--seven-segment-color-off` | Segment color `off`| #DDDDDD
+`--seven-segment-background-color` | Element background color | #FFFFFF
+`--seven-segment-width` | Element width | 3rem
+
+
+@customElement
+@element seven-segment
+@demo demo/index.html
+ -->
+<dom-module id="seven-segment">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+        vertical-align: middle;
+        width: var(--seven-segment-width, 3rem);
+        background-color: var(--seven-segment-background-color, #FFFFFF);
+      }
+      g {
+        stroke:var(--seven-segment-background-color, #FFFFFF); 
+        fill-rule:evenodd; 
+        stroke-width:0.25; 
+        stroke-opacity:1; 
+        stroke-linecap:butt; 
+        stroke-linejoin:miter;
+      }
+    </style>
+    <svg viewBox="-1 -1 14 20" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" focusable="false">
+      <def>
+        <polygon id="h-segment" points="1, 1  2, 0  8, 0  9, 1  8, 2  2, 2"/>
+        <polygon id="v-segment" points="1, 9  0, 8  0, 2  1, 1  2, 2  2, 8"/>
+        <circle id="dot" r="1"/>
+      </def>
+      <g>
+        <use xlink:href="#h-segment" x="0" y="0"  fill$="[[_getFill(value, 'a')]]"/>
+        <use xlink:href="#v-segment" x="8" y="0"  fill$="[[_getFill(value, 'b')]]"/>
+        <use xlink:href="#v-segment" x="8" y="8"  fill$="[[_getFill(value, 'c')]]"/>
+        <use xlink:href="#h-segment" x="0" y="16" fill$="[[_getFill(value, 'd')]]"/>
+        <use xlink:href="#v-segment" x="0" y="8"  fill$="[[_getFill(value, 'e')]]"/>
+        <use xlink:href="#v-segment" x="0" y="0"  fill$="[[_getFill(value, 'f')]]"/>
+        <use xlink:href="#h-segment" x="0" y="8"  fill$="[[_getFill(value, 'g')]]"/>
+        <use xlink:href="#dot" x="11"  y="17" fill$="[[_getFill(value, 'dp')]]"/>
+        <!-- extra symbols -->
+        <use xlink:href="#dot" x="3.5" y="3.5" transform="scale(1.5 1.5)" fill$="[[_getFill(value, 'colon')]]" fill-opacity$="[[_getFillOpacity(value, ':')]]" stroke-opacity="0"/>
+        <use xlink:href="#dot" x="3.5" y="8.5" transform="scale(1.5 1.5)" fill$="[[_getFill(value, 'colon')]]" fill-opacity$="[[_getFillOpacity(value, ':')]]" stroke-opacity="0"/>
+        <use xlink:href="#v-segment" x="4" y="4"  fill$="[[_getFill(value, 'plus')]]" fill-opacity$="[[_getFillOpacity(value, '+')]]" stroke-opacity="0"/>
+        <use xlink:href="#h-segment" x="0" y="6"  fill$="[[_getFill(value, 'eq')]]"   fill-opacity$="[[_getFillOpacity(value, '=')]]" stroke-opacity="0"/>
+        <use xlink:href="#h-segment" x="0" y="10" fill$="[[_getFill(value, 'eq')]]"   fill-opacity$="[[_getFillOpacity(value, '=')]]" stroke-opacity="0"/>
+      </g>
+    </svg>
+  </template>
+
+  <script>
+
+    class SevenSegment extends Polymer.Element {
+      static get is() { return 'seven-segment'; }
+      static get properties() {
+        return {
+          value:   { type: String,  reflectToAttribute: true, value: ' '   },
+          decimal: { type: Boolean, reflectToAttribute: true, value: false }
+        };
+      }
+
+      _getFill(value, segment) {
+        const colorOn  = 'var(--seven-segment-color-on, #FF0000)';
+        const colorOff = 'var(--seven-segment-color-off, #DDDDDD)';
+        const bgColor  = 'var(--seven-segment-background-color, #FFFFFF)';
+        const isSegmentOn = (symbol, segment) => {
+          const segments = 'abcdefg';
+          const symbolHexMap = {
+            '0': '7E', '1': '30', '2': '6D', '3': '79', '4': '33', '5': '5B',
+            '6': '5F', '7': '70', '8': '7F', '9': '7B', 'A': '77', 'B': '1F',
+            'C': '4E', 'D': '3D', 'E': '4F', 'F': '47', 'G': '7B', 'H': '37',
+            'I': '6',  'J': '3C', 'K': '37', 'L': 'E',  'M': '54', 'N': '15',
+            'O': '1D', 'P': '67', 'Q': '73', 'R': '5',  'S': '5B', 'T': 'F',
+            'U': '3E', 'V': '1C', 'W': '2A', 'X': '37', 'Y': '3B', 'Z': '6D',
+            '-': '1',  '+': '1',  '_': '8'
+          }; // see https://docs.google.com/spreadsheets/d/1bjvQTReHz-7FZHLloPMIDj6eM_Z2qGyczVn1_DqBJnQ/
+
+          let binString = parseInt(symbolHexMap[symbol.toUpperCase()], 16).toString(2);
+          if (binString === 'NaN') {
+            throw `<seven-segment> Symbol '${symbol}' not supported`;
+          } else {
+            if (binString.length < 7) {
+              binString = ('0000000' + binString).slice(-7);
+            }
+            return (binString[segments.indexOf(segment)] === '1') ? true : false
+          }
+        };
+
+        let symbol = value[0] ? value[0] : ' ';
+
+        if (segment === 'dp') {
+          return (this.decimal) ? colorOn : bgColor
+        }
+
+        if (segment === 'plus') {
+          return (symbol === '+') ? colorOn : bgColor
+        }
+
+        if (segment === 'eq') {
+          return (symbol === '=') ? colorOn : bgColor
+        }
+
+        if (segment === 'colon') {
+          return (symbol === ':') ? colorOn : bgColor
+        }
+
+        if (symbol === ':' || symbol === '=' || (symbol === '+' && segment !== 'g')) {
+          return bgColor
+        }
+
+        if (symbol === ' ') {
+          return colorOff
+        }
+
+        return isSegmentOn(symbol, segment) ? colorOn : colorOff;
+      }
+
+      _getFillOpacity(value, symbol) {
+        return (value[0] === symbol) ? '1' : '0'
+      }
+    }
+
+    window.customElements.define(SevenSegment.is, SevenSegment);
+  </script>
+</dom-module>

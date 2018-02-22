@@ -1,0 +1,60 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="seven-segment.html">
+
+<dom-module id="seven-segments">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+        background-color: var(--seven-segment-background-color, #FFFFFF);;
+        vertical-align: middle;
+        text-align: center;
+      }
+    </style>
+    <span title$="[[value]]" alt$="[[value]]">
+      <template is="dom-repeat" items="[[_data]]">
+        <seven-segment value$="[[item.value]]" decimal$="[[item.decimal]]"></seven-segment>
+      </template>
+    </span>
+  </template>
+
+  <script>
+    /**
+     * `seven-segments`
+     * Polymer 2 seven segment display string
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SevenSegments extends Polymer.Element {
+      static get is() { return 'seven-segments'; }
+      static get properties() {
+        return {
+          value: { type: String,  reflectToAttribute: true, observer: '_display' },
+          _data: Array
+        };
+      }
+
+      _display(value) {
+        let data = [];
+        let str = value.replace(',','.');
+        if (str[0] === '.') { 
+          str = ' ' + str
+        }
+        
+        Array.from(str, (symbol, i) => {
+          let nextSymbol = str[i+1];
+          if (symbol !== '.') {
+            data.push({ value: symbol, decimal: nextSymbol === '.' ? true : false })
+          }
+        });
+
+        this.set('_data', data)
+      }
+    }
+
+    window.customElements.define(SevenSegments.is, SevenSegments);
+  </script>
+</dom-module>
